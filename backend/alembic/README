@@ -1,0 +1,3 @@
+ZeroZero Alembic — async-compatible migrations. Config: ../alembic.ini.
+Generate: `uv run alembic revision --autogenerate -m "msg"` (from ./backend).
+Apply:    `uv run alembic upgrade head`  |  Rollback: `alembic downgrade -1`.

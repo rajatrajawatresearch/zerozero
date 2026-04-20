@@ -1,0 +1,22 @@
+[
+  {"name": "North Indian", "slug": "north-indian", "icon": "curry", "is_veg_only": false},
+  {"name": "South Indian", "slug": "south-indian", "icon": "dosa", "is_veg_only": false},
+  {"name": "Chinese", "slug": "chinese", "icon": "noodles", "is_veg_only": false},
+  {"name": "Italian", "slug": "italian", "icon": "pasta", "is_veg_only": false},
+  {"name": "Mughlai", "slug": "mughlai", "icon": "kebab", "is_veg_only": false},
+  {"name": "Biryani", "slug": "biryani", "icon": "rice", "is_veg_only": false},
+  {"name": "Street Food", "slug": "street-food", "icon": "chaat", "is_veg_only": false},
+  {"name": "Continental", "slug": "continental", "icon": "steak", "is_veg_only": false},
+  {"name": "Japanese", "slug": "japanese", "icon": "sushi", "is_veg_only": false},
+  {"name": "Thai", "slug": "thai", "icon": "bowl", "is_veg_only": false},
+  {"name": "Mexican", "slug": "mexican", "icon": "taco", "is_veg_only": false},
+  {"name": "Pizza", "slug": "pizza", "icon": "pizza", "is_veg_only": false},
+  {"name": "Burger", "slug": "burger", "icon": "burger", "is_veg_only": false},
+  {"name": "Desserts", "slug": "desserts", "icon": "cake", "is_veg_only": true},
+  {"name": "Beverages", "slug": "beverages", "icon": "cup", "is_veg_only": true},
+  {"name": "Bakery", "slug": "bakery", "icon": "bread", "is_veg_only": true},
+  {"name": "Fast Food", "slug": "fast-food", "icon": "fries", "is_veg_only": false},
+  {"name": "Healthy", "slug": "healthy", "icon": "salad", "is_veg_only": false},
+  {"name": "Keto", "slug": "keto", "icon": "egg", "is_veg_only": false},
+  {"name": "Vegan", "slug": "vegan", "icon": "leaf", "is_veg_only": true}
+]

@@ -1,0 +1,175 @@
+{
+  "north-indian": [
+    {"name": "Butter Chicken", "category": "main-course", "price": 389, "is_veg": false, "tags": ["bestseller", "spicy"]},
+    {"name": "Dal Makhani", "category": "main-course", "price": 289, "is_veg": true, "tags": ["bestseller"]},
+    {"name": "Paneer Tikka Masala", "category": "main-course", "price": 329, "is_veg": true, "tags": ["chef-special"]},
+    {"name": "Chicken Tikka", "category": "starters", "price": 349, "is_veg": false, "tags": ["spicy"]},
+    {"name": "Hara Bhara Kebab", "category": "starters", "price": 219, "is_veg": true, "tags": []},
+    {"name": "Garlic Naan", "category": "breads", "price": 79, "is_veg": true, "tags": []},
+    {"name": "Butter Roti", "category": "breads", "price": 29, "is_veg": true, "tags": []},
+    {"name": "Jeera Rice", "category": "rice-biryani", "price": 189, "is_veg": true, "tags": []},
+    {"name": "Veg Thali", "category": "thalis", "price": 299, "is_veg": true, "tags": ["bestseller"]},
+    {"name": "Non-Veg Thali", "category": "thalis", "price": 449, "is_veg": false, "tags": []},
+    {"name": "Shahi Paneer", "category": "main-course", "price": 319, "is_veg": true, "tags": []},
+    {"name": "Kadai Chicken", "category": "main-course", "price": 379, "is_veg": false, "tags": ["spicy"]}
+  ],
+  "south-indian": [
+    {"name": "Masala Dosa", "category": "south-indian-combos", "price": 159, "is_veg": true, "tags": ["bestseller"]},
+    {"name": "Rava Dosa", "category": "south-indian-combos", "price": 139, "is_veg": true, "tags": []},
+    {"name": "Idli Sambar (4pc)", "category": "south-indian-combos", "price": 119, "is_veg": true, "tags": []},
+    {"name": "Medu Vada (2pc)", "category": "south-indian-combos", "price": 99, "is_veg": true, "tags": []},
+    {"name": "Mysore Masala Dosa", "category": "south-indian-combos", "price": 179, "is_veg": true, "tags": ["spicy"]},
+    {"name": "Uttapam", "category": "south-indian-combos", "price": 149, "is_veg": true, "tags": []},
+    {"name": "Filter Coffee", "category": "beverages", "price": 59, "is_veg": true, "tags": ["chef-special"]},
+    {"name": "Pongal", "category": "south-indian-combos", "price": 149, "is_veg": true, "tags": []},
+    {"name": "Chettinad Chicken", "category": "main-course", "price": 329, "is_veg": false, "tags": ["spicy"]},
+    {"name": "Appam with Stew", "category": "main-course", "price": 249, "is_veg": true, "tags": []}
+  ],
+  "chinese": [
+    {"name": "Veg Hakka Noodles", "category": "chinese", "price": 189, "is_veg": true, "tags": ["bestseller"]},
+    {"name": "Chicken Manchurian", "category": "chinese", "price": 249, "is_veg": false, "tags": ["spicy"]},
+    {"name": "Veg Fried Rice", "category": "chinese", "price": 179, "is_veg": true, "tags": []},
+    {"name": "Chilli Chicken", "category": "chinese", "price": 279, "is_veg": false, "tags": ["spicy"]},
+    {"name": "Veg Momos (8pc)", "category": "starters", "price": 129, "is_veg": true, "tags": ["bestseller"]},
+    {"name": "Chicken Momos (8pc)", "category": "starters", "price": 159, "is_veg": false, "tags": []},
+    {"name": "Schezwan Noodles", "category": "chinese", "price": 209, "is_veg": true, "tags": ["spicy"]},
+    {"name": "Honey Chilli Potato", "category": "starters", "price": 199, "is_veg": true, "tags": ["chef-special"]},
+    {"name": "Spring Roll", "category": "starters", "price": 149, "is_veg": true, "tags": []}
+  ],
+  "italian": [
+    {"name": "Margherita Pizza", "category": "main-course", "price": 299, "is_veg": true, "tags": ["bestseller"]},
+    {"name": "Farmhouse Pizza", "category": "main-course", "price": 449, "is_veg": true, "tags": []},
+    {"name": "Chicken Pepperoni Pizza", "category": "main-course", "price": 529, "is_veg": false, "tags": []},
+    {"name": "Penne Arrabbiata", "category": "main-course", "price": 349, "is_veg": true, "tags": ["spicy"]},
+    {"name": "Alfredo Pasta", "category": "main-course", "price": 379, "is_veg": true, "tags": ["chef-special"]},
+    {"name": "Garlic Bread", "category": "starters", "price": 149, "is_veg": true, "tags": []},
+    {"name": "Tiramisu", "category": "desserts", "price": 229, "is_veg": true, "tags": ["chef-special"]},
+    {"name": "Lasagna", "category": "main-course", "price": 419, "is_veg": true, "tags": []}
+  ],
+  "mughlai": [
+    {"name": "Mutton Biryani", "category": "rice-biryani", "price": 449, "is_veg": false, "tags": ["bestseller"]},
+    {"name": "Chicken Biryani", "category": "rice-biryani", "price": 349, "is_veg": false, "tags": ["bestseller"]},
+    {"name": "Mutton Rogan Josh", "category": "main-course", "price": 499, "is_veg": false, "tags": ["chef-special"]},
+    {"name": "Seekh Kebab", "category": "starters", "price": 289, "is_veg": false, "tags": ["spicy"]},
+    {"name": "Galouti Kebab", "category": "starters", "price": 359, "is_veg": false, "tags": ["chef-special"]},
+    {"name": "Nihari", "category": "main-course", "price": 429, "is_veg": false, "tags": []},
+    {"name": "Sheermal", "category": "breads", "price": 79, "is_veg": true, "tags": []},
+    {"name": "Shahi Tukda", "category": "desserts", "price": 189, "is_veg": true, "tags": ["bestseller"]}
+  ],
+  "biryani": [
+    {"name": "Hyderabadi Chicken Biryani", "category": "rice-biryani", "price": 369, "is_veg": false, "tags": ["bestseller"]},
+    {"name": "Hyderabadi Mutton Biryani", "category": "rice-biryani", "price": 459, "is_veg": false, "tags": ["bestseller"]},
+    {"name": "Veg Dum Biryani", "category": "rice-biryani", "price": 269, "is_veg": true, "tags": []},
+    {"name": "Prawn Biryani", "category": "rice-biryani", "price": 529, "is_veg": false, "tags": ["chef-special"]},
+    {"name": "Egg Biryani", "category": "rice-biryani", "price": 249, "is_veg": false, "tags": []},
+    {"name": "Mirchi Ka Salan", "category": "main-course", "price": 149, "is_veg": true, "tags": ["spicy"]},
+    {"name": "Raita", "category": "main-course", "price": 69, "is_veg": true, "tags": []},
+    {"name": "Double Ka Meetha", "category": "desserts", "price": 159, "is_veg": true, "tags": []}
+  ],
+  "street-food": [
+    {"name": "Pani Puri (6pc)", "category": "starters", "price": 89, "is_veg": true, "tags": ["bestseller"]},
+    {"name": "Bhel Puri", "category": "starters", "price": 99, "is_veg": true, "tags": []},
+    {"name": "Dahi Bhalla", "category": "starters", "price": 119, "is_veg": true, "tags": []},
+    {"name": "Aloo Tikki Chaat", "category": "starters", "price": 99, "is_veg": true, "tags": ["bestseller"]},
+    {"name": "Samosa (2pc)", "category": "starters", "price": 49, "is_veg": true, "tags": []},
+    {"name": "Chole Bhature", "category": "main-course", "price": 179, "is_veg": true, "tags": ["bestseller"]},
+    {"name": "Raj Kachori", "category": "starters", "price": 119, "is_veg": true, "tags": ["chef-special"]},
+    {"name": "Pav Bhaji", "category": "main-course", "price": 159, "is_veg": true, "tags": []}
+  ],
+  "continental": [
+    {"name": "Grilled Chicken Steak", "category": "main-course", "price": 549, "is_veg": false, "tags": ["chef-special"]},
+    {"name": "Fish & Chips", "category": "main-course", "price": 499, "is_veg": false, "tags": []},
+    {"name": "Mushroom Risotto", "category": "main-course", "price": 429, "is_veg": true, "tags": []},
+    {"name": "Caesar Salad", "category": "starters", "price": 299, "is_veg": true, "tags": []},
+    {"name": "Mashed Potatoes", "category": "starters", "price": 199, "is_veg": true, "tags": []},
+    {"name": "Creme Brulee", "category": "desserts", "price": 279, "is_veg": true, "tags": ["chef-special"]}
+  ],
+  "japanese": [
+    {"name": "California Roll", "category": "starters", "price": 449, "is_veg": false, "tags": ["bestseller"]},
+    {"name": "Salmon Nigiri", "category": "starters", "price": 529, "is_veg": false, "tags": ["chef-special"]},
+    {"name": "Chicken Teriyaki", "category": "main-course", "price": 489, "is_veg": false, "tags": []},
+    {"name": "Vegetable Tempura", "category": "starters", "price": 349, "is_veg": true, "tags": []},
+    {"name": "Miso Soup", "category": "starters", "price": 189, "is_veg": true, "tags": []},
+    {"name": "Ramen Bowl", "category": "main-course", "price": 449, "is_veg": false, "tags": ["bestseller"]}
+  ],
+  "thai": [
+    {"name": "Pad Thai Noodles", "category": "main-course", "price": 329, "is_veg": true, "tags": ["bestseller"]},
+    {"name": "Thai Green Curry", "category": "main-course", "price": 349, "is_veg": true, "tags": ["spicy"]},
+    {"name": "Thai Red Curry Chicken", "category": "main-course", "price": 399, "is_veg": false, "tags": ["spicy"]},
+    {"name": "Tom Yum Soup", "category": "starters", "price": 259, "is_veg": false, "tags": ["spicy"]},
+    {"name": "Thai Basil Rice", "category": "rice-biryani", "price": 279, "is_veg": true, "tags": []}
+  ],
+  "mexican": [
+    {"name": "Chicken Burrito", "category": "main-course", "price": 299, "is_veg": false, "tags": ["bestseller"]},
+    {"name": "Veg Quesadilla", "category": "main-course", "price": 249, "is_veg": true, "tags": []},
+    {"name": "Nachos with Cheese", "category": "starters", "price": 229, "is_veg": true, "tags": []},
+    {"name": "Beef Tacos (3pc)", "category": "starters", "price": 349, "is_veg": false, "tags": ["spicy"]},
+    {"name": "Mexican Rice Bowl", "category": "main-course", "price": 279, "is_veg": true, "tags": []}
+  ],
+  "pizza": [
+    {"name": "Margherita", "category": "main-course", "price": 249, "is_veg": true, "tags": ["bestseller"]},
+    {"name": "Veggie Supreme", "category": "main-course", "price": 399, "is_veg": true, "tags": []},
+    {"name": "Chicken BBQ", "category": "main-course", "price": 479, "is_veg": false, "tags": ["chef-special"]},
+    {"name": "Tandoori Paneer Pizza", "category": "main-course", "price": 429, "is_veg": true, "tags": ["spicy"]},
+    {"name": "Pepperoni", "category": "main-course", "price": 499, "is_veg": false, "tags": []},
+    {"name": "Four Cheese", "category": "main-course", "price": 459, "is_veg": true, "tags": []},
+    {"name": "Garlic Breadsticks", "category": "starters", "price": 179, "is_veg": true, "tags": []}
+  ],
+  "burger": [
+    {"name": "Classic Veg Burger", "category": "main-course", "price": 129, "is_veg": true, "tags": []},
+    {"name": "Chicken Maharaja", "category": "main-course", "price": 229, "is_veg": false, "tags": ["bestseller"]},
+    {"name": "Cheese Burst Burger", "category": "main-course", "price": 249, "is_veg": true, "tags": ["chef-special"]},
+    {"name": "Double Patty Beef Burger", "category": "main-course", "price": 349, "is_veg": false, "tags": []},
+    {"name": "French Fries", "category": "starters", "price": 119, "is_veg": true, "tags": []}
+  ],
+  "desserts": [
+    {"name": "Gulab Jamun (2pc)", "category": "desserts", "price": 89, "is_veg": true, "tags": ["bestseller"]},
+    {"name": "Rasmalai (2pc)", "category": "desserts", "price": 119, "is_veg": true, "tags": []},
+    {"name": "Kulfi Falooda", "category": "desserts", "price": 149, "is_veg": true, "tags": ["chef-special"]},
+    {"name": "Chocolate Brownie with Ice Cream", "category": "desserts", "price": 189, "is_veg": true, "tags": ["bestseller"]},
+    {"name": "Cheesecake Slice", "category": "desserts", "price": 229, "is_veg": true, "tags": []},
+    {"name": "Jalebi (200g)", "category": "desserts", "price": 139, "is_veg": true, "tags": []}
+  ],
+  "beverages": [
+    {"name": "Masala Chai", "category": "beverages", "price": 49, "is_veg": true, "tags": ["bestseller"]},
+    {"name": "Cold Coffee", "category": "beverages", "price": 129, "is_veg": true, "tags": []},
+    {"name": "Fresh Lime Soda", "category": "beverages", "price": 89, "is_veg": true, "tags": []},
+    {"name": "Mango Lassi", "category": "beverages", "price": 119, "is_veg": true, "tags": ["chef-special"]},
+    {"name": "Masala Chaas", "category": "beverages", "price": 69, "is_veg": true, "tags": []},
+    {"name": "Cappuccino", "category": "beverages", "price": 149, "is_veg": true, "tags": []}
+  ],
+  "bakery": [
+    {"name": "Butter Croissant", "category": "starters", "price": 129, "is_veg": true, "tags": ["bestseller"]},
+    {"name": "Chocolate Muffin", "category": "desserts", "price": 99, "is_veg": true, "tags": []},
+    {"name": "Garlic Cheese Bread", "category": "starters", "price": 189, "is_veg": true, "tags": []},
+    {"name": "Donut (Glazed)", "category": "desserts", "price": 89, "is_veg": true, "tags": []},
+    {"name": "Whole Wheat Sandwich", "category": "starters", "price": 159, "is_veg": true, "tags": []}
+  ],
+  "fast-food": [
+    {"name": "Paneer Wrap", "category": "main-course", "price": 179, "is_veg": true, "tags": ["bestseller"]},
+    {"name": "Chicken Wrap", "category": "main-course", "price": 219, "is_veg": false, "tags": []},
+    {"name": "Masala Fries", "category": "starters", "price": 119, "is_veg": true, "tags": []},
+    {"name": "Crispy Chicken Strips", "category": "starters", "price": 229, "is_veg": false, "tags": ["spicy"]},
+    {"name": "Hot Dog", "category": "main-course", "price": 189, "is_veg": false, "tags": []}
+  ],
+  "healthy": [
+    {"name": "Grilled Chicken Bowl", "category": "main-course", "price": 349, "is_veg": false, "tags": ["chef-special"]},
+    {"name": "Quinoa Salad", "category": "starters", "price": 289, "is_veg": true, "tags": []},
+    {"name": "Avocado Toast", "category": "starters", "price": 249, "is_veg": true, "tags": ["bestseller"]},
+    {"name": "Sprouts Chaat", "category": "starters", "price": 149, "is_veg": true, "tags": []},
+    {"name": "Fresh Fruit Bowl", "category": "starters", "price": 179, "is_veg": true, "tags": []}
+  ],
+  "keto": [
+    {"name": "Keto Chicken Tikka", "category": "main-course", "price": 399, "is_veg": false, "tags": []},
+    {"name": "Keto Egg Bhurji", "category": "main-course", "price": 249, "is_veg": false, "tags": ["bestseller"]},
+    {"name": "Keto Paneer Bowl", "category": "main-course", "price": 329, "is_veg": true, "tags": []},
+    {"name": "Almond Flour Roti (2pc)", "category": "breads", "price": 139, "is_veg": true, "tags": []}
+  ],
+  "vegan": [
+    {"name": "Vegan Buddha Bowl", "category": "main-course", "price": 329, "is_veg": true, "tags": ["bestseller"]},
+    {"name": "Tofu Tikka", "category": "starters", "price": 259, "is_veg": true, "tags": ["chef-special"]},
+    {"name": "Vegan Chocolate Cake", "category": "desserts", "price": 199, "is_veg": true, "tags": []},
+    {"name": "Almond Milk Smoothie", "category": "beverages", "price": 169, "is_veg": true, "tags": []},
+    {"name": "Chickpea Salad", "category": "starters", "price": 229, "is_veg": true, "tags": []}
+  ]
+}
