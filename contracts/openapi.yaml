@@ -1,0 +1,28 @@
+openapi: 3.1.0
+info:
+  title: ZeroZero API
+  version: 0.1.0
+  description: |
+    Source-of-truth contract between frontend and backend.
+    Auto-regenerated from FastAPI app on each build: `uv run python -m zerozero_api.scripts.export_openapi`.
+    Frontend types are generated from this file: `pnpm gen:api`.
+servers:
+  - url: http://localhost:8000/api/v1
+paths:
+  /health:
+    get:
+      summary: Health check
+      tags: [system]
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: ok }
+                  db: { type: string, example: ok }
+                  redis: { type: string, example: ok }
+components:
+  schemas: {}
