@@ -189,8 +189,11 @@ export function Header(): ReactElement {
   return (
     <header
       className={cn(
-        'sticky top-0 z-40 w-full border-b border-border/60 bg-background/80 backdrop-blur',
-        'supports-[backdrop-filter]:bg-background/60',
+        // Raised opacity from /80 → /95 so the hero's `primary/10` gradient
+        // doesn't bleed through and drop the logo contrast below WCAG AA
+        // (axe-core reported 4.22 against `#fdedee` pre-fix). Phase 5 A3.
+        'sticky top-0 z-40 w-full border-b border-border/60 bg-background/95 backdrop-blur',
+        'supports-[backdrop-filter]:bg-background/80',
       )}
     >
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-2 px-3 sm:px-6">

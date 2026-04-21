@@ -20,25 +20,28 @@ export default function CartPage(): ReactElement {
 
   if (cart.isLoading) {
     return (
-      <main className="mx-auto flex min-h-[60vh] max-w-4xl items-center justify-center px-4 py-10">
+      // AppShell provides the `<main>` landmark — use `<div>` so we don't
+      // emit a duplicate-main (axe: `landmark-no-duplicate-main`). Spinner
+      // gets `role="status"` so AT announces the loading state. Phase 5 A3.
+      <div className="mx-auto flex min-h-[60vh] max-w-4xl items-center justify-center px-4 py-10" role="status">
         <Loader2
           className="size-6 animate-spin text-muted-foreground"
           aria-label="Loading cart"
         />
-      </main>
+      </div>
     );
   }
 
   if (cart.items.length === 0) {
     return (
-      <main className="mx-auto max-w-lg px-4 py-16 sm:px-6">
+      <div className="mx-auto max-w-lg px-4 py-16 sm:px-6">
         <EmptyCart />
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
       <header className="mb-6 flex items-center gap-3">
         <div
           aria-hidden
@@ -111,6 +114,6 @@ export default function CartPage(): ReactElement {
           </p>
         </aside>
       </div>
-    </main>
+    </div>
   );
 }

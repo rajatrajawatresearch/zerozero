@@ -65,7 +65,9 @@ export default function RestaurantDetailPage(): React.ReactElement {
 
   if (isError) {
     return (
-      <main className="mx-auto flex max-w-3xl flex-col items-center gap-3 px-6 py-20 text-center">
+      // AppShell owns the single `<main>` landmark — switch to `<div>` to
+      // avoid axe's `landmark-no-duplicate-main` violation. Phase 5 A3.
+      <div className="mx-auto flex max-w-3xl flex-col items-center gap-3 px-6 py-20 text-center">
         <AlertCircle className="size-8 text-destructive" aria-hidden />
         <h1 className="text-xl font-semibold">Could not load restaurant</h1>
         <p className="text-sm text-muted-foreground">
@@ -77,7 +79,7 @@ export default function RestaurantDetailPage(): React.ReactElement {
             Back to restaurants
           </Link>
         </Button>
-      </main>
+      </div>
     );
   }
 
@@ -86,8 +88,9 @@ export default function RestaurantDetailPage(): React.ReactElement {
       {/* Hero */}
       <RestaurantHero detail={detail} isLoading={isLoading && !detail} />
 
-      {/* Body */}
-      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+      {/* Body — AppShell owns the `<main>` landmark, so use `<div>` here to
+          avoid axe's duplicate-main / landmark-unique violations. Phase 5 A3. */}
+      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_320px]">
           {/* Menu + category nav */}
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-[200px_1fr]">
@@ -131,7 +134,7 @@ export default function RestaurantDetailPage(): React.ReactElement {
             />
           </div>
         ) : null}
-      </main>
+      </div>
     </div>
   );
 }

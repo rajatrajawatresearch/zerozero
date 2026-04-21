@@ -29,7 +29,12 @@ export function EmptyCart({ className, onNavigate }: EmptyCartProps): ReactEleme
       >
         <ShoppingBag className="size-7" />
       </div>
-      <h3 className="text-lg font-semibold text-foreground">Your cart is empty</h3>
+      {/*
+        Bumped h3 → h1 so the empty-cart state passes axe's
+        `page-has-heading-one` on the standalone `/cart` route. Visually
+        identical (same classes); only the semantic level changed. Phase 5 A3.
+      */}
+      <h1 className="text-lg font-semibold text-foreground">Your cart is empty</h1>
       <p className="max-w-xs text-sm text-muted-foreground">
         Nothing here yet. Browse restaurants and add something delicious.
       </p>

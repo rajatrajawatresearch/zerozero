@@ -1,0 +1,54 @@
+{
+  email {$ACME_EMAIL:admin@example.com}
+}
+
+{$DOMAIN:localhost} {
+  encode gzip zstd
+
+  # Backend API
+  handle /api/* {
+    reverse_proxy backend:8000
+  }
+
+  # WebSocket endpoints
+  handle /ws/* {
+    reverse_proxy backend:8000
+  }
+
+  # Uploaded media
+  handle /uploads/* {
+    reverse_proxy backend:8000
+  }
+
+  # OpenAPI schema + docs
+  handle /openapi.json {
+    reverse_proxy backend:8000
+  }
+
+  handle /docs* {
+    reverse_proxy backend:8000
+  }
+
+  handle /redoc* {
+    reverse_proxy backend:8000
+  }
+
+  # Everything else goes to the SPA
+  handle {
+    reverse_proxy frontend:80
+  }
+
+  # Basic security headers
+  header {
+    Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    X-Content-Type-Options "nosniff"
+    X-Frame-Options "SAMEORIGIN"
+    Referrer-Policy "strict-origin-when-cross-origin"
+    -Server
+  }
+
+  log {
+    output stdout
+    format json
+  }
+}

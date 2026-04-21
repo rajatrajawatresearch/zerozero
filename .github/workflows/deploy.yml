@@ -1,0 +1,75 @@
+name: Deploy to VPS
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Image tag to deploy (default: latest)"
+        required: false
+        default: "latest"
+  workflow_run:
+    workflows: ["Build & Push Images"]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  deploy:
+    name: SSH Deploy to VPS
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script_stop: true
+          script: |
+            set -euo pipefail
+            cd /srv/zerozero
+            echo "==> Pulling latest source"
+            git pull --ff-only
+            echo "==> Logging in to GHCR"
+            echo "${{ secrets.GHCR_PULL_TOKEN }}" | docker login ghcr.io -u "${{ secrets.GHCR_PULL_USER }}" --password-stdin
+            echo "==> Pulling images"
+            docker compose -f docker-compose.prod.yml pull
+            echo "==> Starting stack (no-build, images already pulled)"
+            docker compose -f docker-compose.prod.yml up -d --no-build
+            echo "==> Applying DB migrations"
+            docker compose -f docker-compose.prod.yml exec -T backend alembic upgrade head
+            echo "==> Pruning dangling images"
+            docker image prune -f
+
+      - name: Health check
+        env:
+          DOMAIN: ${{ secrets.DOMAIN }}
+        run: |
+          set -euo pipefail
+          echo "==> Waiting 10s for backend warmup"
+          sleep 10
+          echo "==> Hitting https://${DOMAIN}/api/v1/health"
+          HTTP_CODE=$(curl -s -o /tmp/health.out -w "%{http_code}" "https://${DOMAIN}/api/v1/health" || echo "000")
+          echo "HTTP ${HTTP_CODE}"
+          cat /tmp/health.out || true
+          echo ""
+          if [ "${HTTP_CODE}" -ge 500 ] || [ "${HTTP_CODE}" = "000" ]; then
+            echo "::error::Health check failed with HTTP ${HTTP_CODE}"
+            exit 1
+          fi
+          if [ "${HTTP_CODE}" -ge 400 ]; then
+            echo "::warning::Health endpoint returned HTTP ${HTTP_CODE} (non-5xx, treating as non-fatal)"
+          fi
+
+      - name: Notify on failure
+        if: failure()
+        run: echo "::error::Deploy failed. See job logs. Consider rollback via docs/OPERATIONS.md."

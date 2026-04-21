@@ -49,11 +49,18 @@ export default function HomePage(): ReactElement {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[18rem_1fr]">
-          <aside className="hidden lg:block" aria-label="Filters">
+          {/*
+            Outer wrapper was `<aside aria-label="Filters">`, but
+            `FilterSidebar` already renders its own `<aside
+            aria-label="Restaurant filters">`. Doubling the complementary
+            landmark tripped axe's `landmark-complementary-is-top-level`
+            rule. Phase 5 A3 — drop to a plain `<div>`.
+          */}
+          <div className="hidden lg:block">
             <div className="sticky top-24">
               <FilterSidebar />
             </div>
-          </aside>
+          </div>
 
           <div>
             <RestaurantGrid params={gridParams} />

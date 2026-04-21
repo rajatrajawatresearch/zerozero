@@ -24,7 +24,9 @@ export default function SignupPage(): React.ReactElement {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
+    // AppShell already provides the single `<main>` landmark — avoid
+    // duplicate `<main>` elements (axe: `landmark-no-duplicate-main`). Phase 5 A3.
+    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
       <div className="w-full max-w-md space-y-8">
         <div className="flex flex-col items-center gap-2 text-center">
           <span
@@ -53,6 +55,6 @@ export default function SignupPage(): React.ReactElement {
           </CardContent>
         </Card>
       </div>
-    </main>
+    </div>
   );
 }

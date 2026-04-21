@@ -1,4 +1,5 @@
-FROM node:20-alpine
+# ---- builder ----
+FROM node:20-alpine AS builder
 
 RUN corepack enable && corepack prepare pnpm@9.12.0 --activate
 
@@ -9,5 +10,14 @@ RUN pnpm install --frozen-lockfile 2>/dev/null || pnpm install
 
 COPY . .
 
-EXPOSE 5173
-CMD ["pnpm", "dev", "--host", "0.0.0.0"]
+RUN pnpm build
+
+# ---- static server ----
+FROM caddy:2-alpine AS runtime
+
+COPY --from=builder /app/dist /srv
+COPY prod.Caddyfile /etc/caddy/Caddyfile
+
+EXPOSE 80
+
+CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]

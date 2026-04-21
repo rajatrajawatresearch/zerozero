@@ -1,0 +1,95 @@
+name: Lighthouse CI
+
+on:
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  lighthouse:
+    name: Lighthouse (perf + a11y + seo + best-practices)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_USER: zerozero
+          POSTGRES_PASSWORD: zerozero_dev
+          POSTGRES_DB: zerozero
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+        options: --health-cmd "redis-cli ping" --health-interval 5s
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # -------------------------- Backend bring-up --------------------------
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Backend deps
+        working-directory: ./backend
+        run: uv sync --all-extras
+
+      - name: Run migrations + seed
+        working-directory: ./backend
+        env:
+          DATABASE_URL: postgresql+asyncpg://zerozero:zerozero_dev@localhost:5432/zerozero
+          DATABASE_URL_SYNC: postgresql+psycopg://zerozero:zerozero_dev@localhost:5432/zerozero
+          REDIS_URL: redis://localhost:6379/0
+          JWT_SECRET: lhci-secret-only
+        run: |
+          uv run alembic upgrade head
+          uv run python -m zerozero_api.seed --reset
+
+      - name: Boot backend (background)
+        working-directory: ./backend
+        env:
+          DATABASE_URL: postgresql+asyncpg://zerozero:zerozero_dev@localhost:5432/zerozero
+          DATABASE_URL_SYNC: postgresql+psycopg://zerozero:zerozero_dev@localhost:5432/zerozero
+          REDIS_URL: redis://localhost:6379/0
+          JWT_SECRET: lhci-secret-only
+        run: |
+          nohup uv run uvicorn zerozero_api.main:app --host 0.0.0.0 --port 8000 > /tmp/backend.log 2>&1 &
+          for i in {1..30}; do
+            curl -sf http://localhost:8000/api/v1/health && break
+            sleep 1
+          done
+
+      # -------------------------- Frontend build ----------------------------
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+
+      - uses: pnpm/action-setup@v4
+        with: { version: 9.12.0 }
+
+      - name: Frontend deps
+        working-directory: ./frontend
+        run: pnpm install --frozen-lockfile
+
+      - name: Build frontend
+        working-directory: ./frontend
+        env:
+          VITE_API_URL: http://localhost:8000
+        run: pnpm build
+
+      # -------------------------- Lighthouse --------------------------------
+      - name: Install Lighthouse CI
+        run: npm install -g @lhci/cli@0.14.x
+
+      - name: Run Lighthouse CI
+        working-directory: ./frontend
+        run: lhci autorun
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
