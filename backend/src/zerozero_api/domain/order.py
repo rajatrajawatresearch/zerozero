@@ -68,7 +68,7 @@ class Order(UUIDPk, TimestampMixin, Base):
     )
 
     status: Mapped[OrderStatus] = mapped_column(
-        sa.Enum(OrderStatus, name="order_status"),
+        sa.Enum(OrderStatus, name="order_status", values_callable=lambda e: [m.value for m in e]),
         nullable=False,
         default=OrderStatus.PLACED,
         server_default=OrderStatus.PLACED.value,
@@ -92,13 +92,13 @@ class Order(UUIDPk, TimestampMixin, Base):
     )
 
     payment_method: Mapped[PaymentMethod] = mapped_column(
-        sa.Enum(PaymentMethod, name="payment_method"),
+        sa.Enum(PaymentMethod, name="payment_method", values_callable=lambda e: [m.value for m in e]),
         nullable=False,
         default=PaymentMethod.COD,
         server_default=PaymentMethod.COD.value,
     )
     payment_status: Mapped[PaymentStatus] = mapped_column(
-        sa.Enum(PaymentStatus, name="payment_status"),
+        sa.Enum(PaymentStatus, name="payment_status", values_callable=lambda e: [m.value for m in e]),
         nullable=False,
         default=PaymentStatus.PENDING,
         server_default=PaymentStatus.PENDING.value,
@@ -195,12 +195,12 @@ class OrderStatusEvent(UUIDPk, Base):
         index=True,
     )
     status: Mapped[OrderStatus] = mapped_column(
-        sa.Enum(OrderStatus, name="order_status"),
+        sa.Enum(OrderStatus, name="order_status", values_callable=lambda e: [m.value for m in e]),
         nullable=False,
     )
     note: Mapped[str | None] = mapped_column(sa.String(512), nullable=True)
     actor_type: Mapped[ActorType] = mapped_column(
-        sa.Enum(ActorType, name="actor_type"),
+        sa.Enum(ActorType, name="actor_type", values_callable=lambda e: [m.value for m in e]),
         nullable=False,
         default=ActorType.SYSTEM,
         server_default=ActorType.SYSTEM.value,

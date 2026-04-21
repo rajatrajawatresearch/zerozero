@@ -49,7 +49,7 @@ class User(UUIDPk, TimestampMixin, Base):
     password_hash: Mapped[str] = mapped_column(sa.String(255), nullable=False)
     full_name: Mapped[str] = mapped_column(sa.String(120), nullable=False)
     role: Mapped[UserRole] = mapped_column(
-        sa.Enum(UserRole, name="user_role"),
+        sa.Enum(UserRole, name="user_role", values_callable=lambda e: [m.value for m in e]),
         nullable=False,
         default=UserRole.CUSTOMER,
         server_default=UserRole.CUSTOMER.value,

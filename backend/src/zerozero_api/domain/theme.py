@@ -39,13 +39,13 @@ class ThemePreset(UUIDPk, TimestampMixin, Base):
     primary_oklch: Mapped[str] = mapped_column(sa.String(64), nullable=False)
     accent_oklch: Mapped[str] = mapped_column(sa.String(64), nullable=False)
     mode: Mapped[ThemeMode] = mapped_column(
-        sa.Enum(ThemeMode, name="theme_mode"),
+        sa.Enum(ThemeMode, name="theme_mode", values_callable=lambda e: [m.value for m in e]),
         nullable=False,
         default=ThemeMode.SYSTEM,
         server_default=ThemeMode.SYSTEM.value,
     )
     radius: Mapped[ThemeRadius] = mapped_column(
-        sa.Enum(ThemeRadius, name="theme_radius"),
+        sa.Enum(ThemeRadius, name="theme_radius", values_callable=lambda e: [m.value for m in e]),
         nullable=False,
         default=ThemeRadius.MD,
         server_default=ThemeRadius.MD.value,

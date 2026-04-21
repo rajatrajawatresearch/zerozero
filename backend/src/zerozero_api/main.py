@@ -19,7 +19,16 @@ from zerozero_api.core.errors import register_exception_handlers
 from zerozero_api.core.logging import configure_logging, get_logger
 from zerozero_api.core.middleware import AccessLogMiddleware, RequestIdMiddleware
 from zerozero_api.core.ratelimit import limiter
+from zerozero_api.routers.admin.menu_items import router as admin_menu_items_router
+from zerozero_api.routers.admin.restaurants import router as admin_restaurants_router
+from zerozero_api.routers.auth import router as auth_router
+from zerozero_api.routers.categories import router as categories_router
+from zerozero_api.routers.cuisines import router as cuisines_router
+from zerozero_api.routers.geo import router as geo_router
 from zerozero_api.routers.health import router as health_router
+from zerozero_api.routers.restaurants import router as restaurants_router
+from zerozero_api.routers.uploads import router as uploads_router
+from zerozero_api.routers.users import router as users_router
 from zerozero_api.settings import Settings, get_settings
 
 # Configure logging at import time so every subsequent module log call is structured.
@@ -135,6 +144,26 @@ def create_app() -> FastAPI:
 
     # ---- Routers ------------------------------------------------------------
     app.include_router(health_router, prefix=settings.API_V1_PREFIX)
+    app.include_router(auth_router, prefix=settings.API_V1_PREFIX)
+    app.include_router(users_router, prefix=settings.API_V1_PREFIX)
+    app.include_router(uploads_router, prefix=settings.API_V1_PREFIX)
+    app.include_router(geo_router, prefix=settings.API_V1_PREFIX)
+    app.include_router(restaurants_router, prefix=settings.API_V1_PREFIX)
+    app.include_router(cuisines_router, prefix=settings.API_V1_PREFIX)
+    app.include_router(categories_router, prefix=settings.API_V1_PREFIX)
+    app.include_router(admin_restaurants_router, prefix=settings.API_V1_PREFIX)
+    app.include_router(admin_menu_items_router, prefix=settings.API_V1_PREFIX)
+
+    # ---- Static files (local storage driver only) ---------------------------
+    # When STORAGE_DRIVER=local, we serve uploaded images from disk via
+    # StaticFiles so the LocalDisk-produced public URLs actually resolve.
+    from fastapi.staticfiles import StaticFiles
+    from pathlib import Path
+
+    if settings.STORAGE_DRIVER == "local":
+        upload_root = Path(settings.STORAGE_LOCAL_PATH).resolve()
+        upload_root.mkdir(parents=True, exist_ok=True)
+        app.mount("/uploads", StaticFiles(directory=str(upload_root)), name="uploads")
 
     return app
 

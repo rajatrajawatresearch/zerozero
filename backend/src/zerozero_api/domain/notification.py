@@ -38,7 +38,7 @@ class Notification(UUIDPk, Base):
         index=True,
     )
     type: Mapped[NotificationType] = mapped_column(
-        sa.Enum(NotificationType, name="notification_type"),
+        sa.Enum(NotificationType, name="notification_type", values_callable=lambda e: [m.value for m in e]),
         nullable=False,
     )
     title: Mapped[str] = mapped_column(sa.String(200), nullable=False)

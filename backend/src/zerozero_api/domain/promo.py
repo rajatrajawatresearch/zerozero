@@ -27,7 +27,7 @@ class PromoCode(UUIDPk, TimestampMixin, Base):
 
     code: Mapped[str] = mapped_column(sa.String(64), nullable=False, unique=True, index=True)
     discount_type: Mapped[DiscountType] = mapped_column(
-        sa.Enum(DiscountType, name="discount_type"),
+        sa.Enum(DiscountType, name="discount_type", values_callable=lambda e: [m.value for m in e]),
         nullable=False,
     )
     value: Mapped[Decimal] = mapped_column(sa.Numeric(12, 2), nullable=False)

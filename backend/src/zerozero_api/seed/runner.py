@@ -161,7 +161,7 @@ async def run_seed(
                 return result.total
 
             async def run_restaurants() -> int:
-                nonlocal restaurant_rows
+                nonlocal restaurant_rows, owner_id
                 if not cuisine_ids or owner_id is None:
                     # If the user scoped ``--only restaurants`` without
                     # cuisines/users already seeded, pull what's there.

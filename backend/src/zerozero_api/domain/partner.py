@@ -41,7 +41,7 @@ class DeliveryPartner(UUIDPk, TimestampMixin, Base):
         index=True,
     )
     vehicle: Mapped[VehicleType] = mapped_column(
-        sa.Enum(VehicleType, name="vehicle_type"),
+        sa.Enum(VehicleType, name="vehicle_type", values_callable=lambda e: [m.value for m in e]),
         nullable=False,
         default=VehicleType.BIKE,
         server_default=VehicleType.BIKE.value,
