@@ -14,7 +14,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic.types import conint
 
-__all__ = ["ReviewCreateIn", "ReviewOut"]
+__all__ = ["ReviewCreateIn", "ReviewListItem", "ReviewOut", "ReviewWithUser"]
 
 
 class ReviewCreateIn(BaseModel):
@@ -59,3 +59,43 @@ class ReviewOut(BaseModel):
         default_factory=list, description="Uploaded image URLs attached to the review."
     )
     created_at: datetime = Field(..., description="Server-side creation time (UTC).")
+
+
+class ReviewListItem(BaseModel):
+    """Public list row for the restaurant-detail reviews section.
+
+    Joins :class:`~zerozero_api.domain.user.User` so each card can show the
+    reviewer's display name + avatar without a second round-trip. The
+    ``user_id`` is deliberately omitted — clients only need the rendered
+    identity, not the UUID.
+    """
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID = Field(..., description="Review UUID.")
+    rating: int = Field(..., ge=1, le=5, description="Star rating 1-5.")
+    comment: str | None = Field(default=None, description="Optional review body.")
+    images: list[str] = Field(
+        default_factory=list,
+        description="Uploaded image URLs attached to the review.",
+    )
+    created_at: datetime = Field(..., description="Server-side creation time (UTC).")
+    user_full_name: str = Field(..., description="Reviewer's display name.")
+    user_avatar_url: str | None = Field(
+        default=None, description="Reviewer's avatar URL, if any."
+    )
+
+
+class ReviewWithUser(ReviewOut):
+    """``ReviewOut`` enriched with the reviewer's public profile bits.
+
+    Useful when the caller already has a specific review UUID (e.g. the
+    owner responding to a complaint) and wants the full payload plus the
+    reviewer's display name / avatar in one go. Keeps ``ReviewOut`` lean
+    for the hot-path create response.
+    """
+
+    user_full_name: str = Field(..., description="Reviewer's display name.")
+    user_avatar_url: str | None = Field(
+        default=None, description="Reviewer's avatar URL, if any."
+    )

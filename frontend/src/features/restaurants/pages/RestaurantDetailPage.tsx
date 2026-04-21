@@ -21,6 +21,9 @@ import { MenuCategory } from '../components/MenuCategory';
 import { RatingBadge } from '../components/RatingBadge';
 import { formatPrice } from '../hooks';
 import type { RestaurantDetail, RestaurantMenu } from '../types';
+// Phase 4 Agent 10 — reviews mount below the menu. Additive only; do not
+// refactor anything else in this page.
+import { ReviewList } from '@/features/reviews';
 
 /**
  * Restaurant detail page — hero + menu + cart summary.
@@ -111,6 +114,23 @@ export default function RestaurantDetailPage(): React.ReactElement {
           {/* Cart summary (sticky) */}
           <CartSummary restaurantId={detail?.id} />
         </div>
+
+        {/* Reviews — Phase 4 Agent 10 additive mount. */}
+        {slug ? (
+          <div className="mt-12">
+            <ReviewList
+              restaurantSlug={slug}
+              {...(detail
+                ? {
+                    aggregate: {
+                      rating_avg: detail.rating_avg,
+                      rating_count: detail.rating_count,
+                    },
+                  }
+                : {})}
+            />
+          </div>
+        ) : null}
       </main>
     </div>
   );

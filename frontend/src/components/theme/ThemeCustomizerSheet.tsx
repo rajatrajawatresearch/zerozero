@@ -1,5 +1,4 @@
-import { useCallback, useMemo, useState, type ReactElement } from 'react';
-import { HexColorPicker } from 'react-colorful';
+import { useCallback, useState, type ReactElement } from 'react';
 import { Paintbrush, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,100 +15,22 @@ import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   PRESETS,
+  contrastForeground,
   oklchToString,
   useTheme,
-  type Oklch,
   type ThemeRadius,
 } from '@/features/theme';
+import {
+  ContrastBadge,
+  CustomPresetManager,
+  ExportImportPanel,
+  OklchPicker,
+  useKeyboardShortcut,
+} from '@/features/theme-customizer';
 import { cn } from '@/lib/utils';
 
 /* -------------------------------------------------------------------------- */
-/*                             OKLCH <-> HEX bridge                           */
-/* -------------------------------------------------------------------------- */
-/**
- * `react-colorful` speaks hex RGB. Our theme engine speaks OKLCH. We bridge
- * via `color(from oklch srgb ...)` in a canvas and vice-versa. The approach:
- *
- *   OKLCH -> hex: render the oklch() string as a swatch in a tiny offscreen
- *   canvas, read back the pixel — cheap, accurate enough for a picker.
- *
- *   hex -> OKLCH: we convert hex to sRGB, linearise, transform to OKLab,
- *   then OKLab to OKLCH. The math is small; worth it to avoid a full
- *   culori/colorjs.io dependency for Phase 2.
- */
-
-function hexToRgb(hex: string): { r: number; g: number; b: number } {
-  const clean = hex.replace('#', '');
-  const full = clean.length === 3
-    ? clean.split('').map((c) => c + c).join('')
-    : clean;
-  const int = Number.parseInt(full, 16);
-  return {
-    r: ((int >> 16) & 0xff) / 255,
-    g: ((int >> 8) & 0xff) / 255,
-    b: (int & 0xff) / 255,
-  };
-}
-
-function srgbToLinear(c: number): number {
-  return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-}
-
-function linearToSrgb(c: number): number {
-  return c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055;
-}
-
-/** sRGB (linear) -> OKLab -> OKLCH. Source: https://bottosson.github.io/posts/oklab/ */
-function rgbToOklch({ r, g, b }: { r: number; g: number; b: number }): Oklch {
-  const lr = srgbToLinear(r);
-  const lg = srgbToLinear(g);
-  const lb = srgbToLinear(b);
-
-  const l = 0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb;
-  const m = 0.2119034982 * lr + 0.6806995451 * lg + 0.1073969566 * lb;
-  const s = 0.0883024619 * lr + 0.2817188376 * lg + 0.6299787005 * lb;
-
-  const l_ = Math.cbrt(l);
-  const m_ = Math.cbrt(m);
-  const s_ = Math.cbrt(s);
-
-  const L = 0.2104542553 * l_ + 0.793617785 * m_ - 0.0040720468 * s_;
-  const a = 1.9779984951 * l_ - 2.428592205 * m_ + 0.4505937099 * s_;
-  const bb = 0.0259040371 * l_ + 0.7827717662 * m_ - 0.808675766 * s_;
-
-  const C = Math.hypot(a, bb);
-  let H = (Math.atan2(bb, a) * 180) / Math.PI;
-  if (H < 0) H += 360;
-  return { l: L, c: C, h: H };
-}
-
-/** OKLCH -> OKLab -> linear RGB -> sRGB -> hex. */
-function oklchToHex(color: Oklch): string {
-  const h = (color.h * Math.PI) / 180;
-  const a = Math.cos(h) * color.c;
-  const bb = Math.sin(h) * color.c;
-
-  const l_ = color.l + 0.3963377774 * a + 0.2158037573 * bb;
-  const m_ = color.l - 0.1055613458 * a - 0.0638541728 * bb;
-  const s_ = color.l - 0.0894841775 * a - 1.291485548 * bb;
-
-  const l = l_ ** 3;
-  const m = m_ ** 3;
-  const s = s_ ** 3;
-
-  const lr = 4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s;
-  const lg = -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s;
-  const lb = -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s;
-
-  const r = Math.round(Math.max(0, Math.min(1, linearToSrgb(lr))) * 255);
-  const g = Math.round(Math.max(0, Math.min(1, linearToSrgb(lg))) * 255);
-  const b = Math.round(Math.max(0, Math.min(1, linearToSrgb(lb))) * 255);
-
-  return `#${[r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('')}`;
-}
-
-/* -------------------------------------------------------------------------- */
-/*                                   Component                                */
+/*                                  Subviews                                  */
 /* -------------------------------------------------------------------------- */
 
 interface SwatchGridProps {
@@ -152,12 +73,25 @@ function PresetSwatchGrid({ onSelect }: SwatchGridProps): ReactElement {
 
 const RADII: ThemeRadius[] = ['sm', 'md', 'lg'];
 
+/* -------------------------------------------------------------------------- */
+/*                                  Component                                 */
+/* -------------------------------------------------------------------------- */
+
 /**
- * Paint-bucket trigger + right-side Sheet that lets the user:
- *   - click a preset swatch
- *   - adjust primary / accent via hex picker (we bridge to OKLCH live)
- *   - choose radius via Tabs
- *   - reset to defaults
+ * Paint-bucket trigger + right-side Sheet.
+ *
+ * Phase 2 (Agent 10) composition:
+ *   - preset swatch grid
+ *   - primary / accent picker (originally HexColorPicker)
+ *   - radius tabs
+ *   - reset button
+ *
+ * Phase 4 (Agent 9) extensions — composed in from `features/theme-customizer`:
+ *   - `OklchPicker` replaces `HexColorPicker` (lossless OKLCH control)
+ *   - `ContrastBadge` renders WCAG ratio next to each picker
+ *   - `CustomPresetManager` — localStorage-backed saved themes
+ *   - `ExportImportPanel` — JSON export / import via clipboard + textarea
+ *   - Global `shift+t` keyboard shortcut opens the sheet (controlled state)
  *
  * Changes flow through `useTheme()` — ThemeProvider writes OKLCH values
  * into the document root so the entire app rethemes in real time.
@@ -166,37 +100,30 @@ export function ThemeCustomizerSheet(): ReactElement {
   const { primary, accent, radius, setPrimary, setAccent, applyPreset, setRadius, resetToDefault } =
     useTheme();
   const [tab, setTab] = useState<'primary' | 'accent'>('primary');
+  const [open, setOpen] = useState(false);
 
-  const primaryHex = useMemo(() => oklchToHex(primary), [primary]);
-  const accentHex = useMemo(() => oklchToHex(accent), [accent]);
-
-  const handlePrimary = useCallback(
-    (hex: string) => {
-      setPrimary(rgbToOklch(hexToRgb(hex)));
-    },
-    [setPrimary],
-  );
-
-  const handleAccent = useCallback(
-    (hex: string) => {
-      setAccent(rgbToOklch(hexToRgb(hex)));
-    },
-    [setAccent],
-  );
+  // Phase 4: `shift+t` toggles the customizer from anywhere in the app.
+  // Ignored when focus is in an input/textarea/contenteditable.
+  useKeyboardShortcut('shift+t', () => setOpen((prev) => !prev));
 
   const handleReset = useCallback(() => {
     resetToDefault();
   }, [resetToDefault]);
 
+  // Foreground that ThemeProvider will actually use — reuse the shared
+  // helper so the badge is always consistent with what renders on screen.
+  const primaryFg = contrastForeground(primary);
+  const accentFg = contrastForeground(accent);
+
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button
           type="button"
           variant="ghost"
           size="icon"
           aria-label="Open theme customizer"
-          title="Customize theme"
+          title="Customize theme (Shift+T)"
         >
           <Paintbrush className="size-4" />
         </Button>
@@ -208,10 +135,14 @@ export function ThemeCustomizerSheet(): ReactElement {
             Theme customizer
           </SheetTitle>
           <SheetDescription>
-            Pick a preset or roll your own. Changes are live and persisted to this device.
+            Pick a preset or roll your own. Changes are live and persisted to this device. Press
+            <kbd className="mx-1 rounded bg-muted px-1 py-0.5 font-mono text-[10px]">Shift</kbd>+
+            <kbd className="mx-1 rounded bg-muted px-1 py-0.5 font-mono text-[10px]">T</kbd>
+            to toggle.
           </SheetDescription>
         </SheetHeader>
 
+        {/* Presets — Phase 2 */}
         <section className="space-y-2">
           <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             Presets
@@ -221,6 +152,8 @@ export function ThemeCustomizerSheet(): ReactElement {
 
         <Separator />
 
+        {/* Colors — Phase 2 structure preserved; picker swapped to OklchPicker
+            and ContrastBadge layered on top. */}
         <section className="space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -235,35 +168,23 @@ export function ThemeCustomizerSheet(): ReactElement {
           </div>
 
           {tab === 'primary' ? (
-            <div className="flex flex-col items-center gap-3">
-              <HexColorPicker
-                color={primaryHex}
-                onChange={handlePrimary}
-                style={{ width: '100%', height: 180 }}
-              />
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span
-                  aria-hidden
-                  className="size-5 rounded-full ring-1 ring-border"
-                  style={{ background: oklchToString(primary) }}
-                />
-                <code className="font-mono">{primaryHex.toUpperCase()}</code>
+            <div className="space-y-3">
+              <OklchPicker value={primary} onChange={setPrimary} label="Primary color" />
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[11px] text-muted-foreground">
+                  Foreground vs. primary surface
+                </span>
+                <ContrastBadge fg={primaryFg} bg={primary} label="Primary" />
               </div>
             </div>
           ) : (
-            <div className="flex flex-col items-center gap-3">
-              <HexColorPicker
-                color={accentHex}
-                onChange={handleAccent}
-                style={{ width: '100%', height: 180 }}
-              />
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span
-                  aria-hidden
-                  className="size-5 rounded-full ring-1 ring-border"
-                  style={{ background: oklchToString(accent) }}
-                />
-                <code className="font-mono">{accentHex.toUpperCase()}</code>
+            <div className="space-y-3">
+              <OklchPicker value={accent} onChange={setAccent} label="Accent color" />
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[11px] text-muted-foreground">
+                  Foreground vs. accent surface
+                </span>
+                <ContrastBadge fg={accentFg} bg={accent} label="Accent" />
               </div>
             </div>
           )}
@@ -271,6 +192,7 @@ export function ThemeCustomizerSheet(): ReactElement {
 
         <Separator />
 
+        {/* Radius — Phase 2 */}
         <section className="space-y-2">
           <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             Radius
@@ -284,6 +206,26 @@ export function ThemeCustomizerSheet(): ReactElement {
               ))}
             </TabsList>
           </Tabs>
+        </section>
+
+        <Separator />
+
+        {/* Custom Presets — Phase 4 (local only) */}
+        <section className="space-y-2">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Custom presets
+          </h3>
+          <CustomPresetManager />
+        </section>
+
+        <Separator />
+
+        {/* Export / Import — Phase 4 */}
+        <section className="space-y-2">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Export &amp; import
+          </h3>
+          <ExportImportPanel />
         </section>
 
         <SheetFooter className="mt-auto flex-row gap-2 sm:justify-between">

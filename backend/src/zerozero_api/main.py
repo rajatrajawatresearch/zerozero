@@ -72,9 +72,12 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     """
     _logger.info("app.startup", env=_settings.APP_ENV, version=__version__)
     await init_engine()
+    from zerozero_api.ws.connection_manager import manager as _ws_manager
+    await _ws_manager.start_redis_subscriber()
     try:
         yield
     finally:
+        await _ws_manager.stop()
         await dispose_engine()
         _logger.info("app.shutdown")
 
@@ -164,6 +167,21 @@ def create_app() -> FastAPI:
     from zerozero_api.routers.search import router as search_router
     app.include_router(search_router, prefix=settings.API_V1_PREFIX)
     from zerozero_api.routers.orders import router as orders_router; app.include_router(orders_router, prefix=settings.API_V1_PREFIX)
+    from zerozero_api.routers.reviews import router as reviews_router; app.include_router(reviews_router, prefix=settings.API_V1_PREFIX)
+
+    # ---- PHASE 4 WebSocket routers -----------------------------------------
+    from zerozero_api.ws.orders import router as ws_orders_router
+    app.include_router(ws_orders_router)
+    from zerozero_api.ws.public import router as ws_public_router
+    from zerozero_api.routers.public import router as public_router
+    app.include_router(ws_public_router)
+    app.include_router(public_router, prefix=settings.API_V1_PREFIX)
+    from zerozero_api.ws.partner import router as ws_partner_router
+    from zerozero_api.routers.partner import router as partner_router
+    app.include_router(ws_partner_router)
+    app.include_router(partner_router, prefix=settings.API_V1_PREFIX)
+    from zerozero_api.routers.notifications import router as notifications_router; app.include_router(notifications_router, prefix=settings.API_V1_PREFIX)
+    from zerozero_api.ws.notifications import router as ws_notifications_router; app.include_router(ws_notifications_router)
 
     # ---- Static files (local storage driver only) ---------------------------
     # When STORAGE_DRIVER=local, we serve uploaded images from disk via

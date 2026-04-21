@@ -26,6 +26,7 @@ import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import { ThemeCustomizerSheet } from '@/components/theme/ThemeCustomizerSheet';
 import { useAuth } from '@/features/auth/hooks';
 import { LocationTrigger } from '@/features/location/components/LocationTrigger';
+import { NotificationBell } from '@/features/notifications';
 import { cn } from '@/lib/utils';
 
 /* -------------------------------------------------------------------------- */
@@ -228,7 +229,10 @@ export function Header(): ReactElement {
           <ThemeCustomizerSheet />
           <CartButton />
           {isAuthenticated ? (
-            <UserMenu />
+            <>
+              <NotificationBell />
+              <UserMenu />
+            </>
           ) : (
             <Button asChild size="sm" className="ml-1 h-9 px-4">
               <Link to="/login">Log in</Link>

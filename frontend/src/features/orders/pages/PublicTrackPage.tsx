@@ -17,30 +17,50 @@ import { AlertCircle } from 'lucide-react';
 import { useParams } from 'react-router';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  EtaBadge,
+  LiveStatusBadge,
+  LiveTrackingMap,
+  usePublicTrackingSocket,
+  useWsClosedLongerThan,
+} from '@/features/tracking';
 
 import { useOrderTrackQuery } from '../api';
 import { OrderStatusStepper } from '../components/OrderStatusStepper';
-import { TrackingMap } from '../components/TrackingMap';
 
 /* -------------------------------------------------------------------------- */
 /*                                   Page                                     */
 /* -------------------------------------------------------------------------- */
 export default function PublicTrackPage(): React.ReactElement {
   const { shareToken } = useParams<{ shareToken: string }>();
+
+  // Phase 4: WS first, polling fallback after 5s of closed/reconnecting.
+  const socket = usePublicTrackingSocket(shareToken);
+  const pollingFallback = useWsClosedLongerThan(socket.liveState, 5_000);
+
   const trackQ = useOrderTrackQuery(shareToken, {
     isPublicToken: true,
-    refetchInterval: 10_000,
+    refetchInterval: pollingFallback ? 10_000 : 0,
   });
 
   const track = trackQ.data;
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6">
-      <header className="mb-5">
-        <h1 className="text-2xl font-bold tracking-tight">Order tracking</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Live updates refresh automatically every 10 seconds.
-        </p>
+      <header className="mb-5 flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Order tracking</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Live updates stream as the courier moves.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <EtaBadge minutes={track?.eta_minutes ?? null} />
+          <LiveStatusBadge
+            liveState={socket.liveState}
+            lastTick={socket.lastTick}
+          />
+        </div>
       </header>
 
       {trackQ.isError ? (
@@ -61,7 +81,7 @@ export default function PublicTrackPage(): React.ReactElement {
             )}
           </section>
 
-          <TrackingMap
+          <LiveTrackingMap
             restaurant={
               track?.restaurant_lat !== undefined && track?.restaurant_lng !== undefined
                 ? {

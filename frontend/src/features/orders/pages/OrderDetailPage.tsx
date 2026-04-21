@@ -23,13 +23,21 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 
+import {
+  EtaBadge,
+  LiveStatusBadge,
+  LiveTrackingMap,
+  useEtaEstimator,
+  useOrderTrackingSocket,
+  useWsClosedLongerThan,
+} from '@/features/tracking';
+
 import { useOrderDetailQuery, useOrderTrackQuery } from '../api';
 import { CancelButton } from '../components/CancelButton';
 import { OrderItemsList } from '../components/OrderItemsList';
 import { OrderStatusStepper } from '../components/OrderStatusStepper';
 import { OrderSummaryBox } from '../components/OrderSummaryBox';
 import { ReviewModal } from '../components/ReviewModal';
-import { TrackingMap } from '../components/TrackingMap';
 import { useRelativeTime } from '../hooks';
 import type { OrderDetailOut, OrderStatus } from '../types';
 import { ACTIVE_STATUSES } from '../types';
@@ -52,9 +60,8 @@ export default function OrderDetailPage(): React.ReactElement {
   const detailQ = useOrderDetailQuery(id);
   const order = detailQ.data;
 
-  // Enable live polling only while the order is in-flight.
+  // Enable live tracking only while the order is in-flight.
   const shouldTrack = order ? isLive(order.status) : false;
-  useOrderTrackQuery(shouldTrack ? id : undefined);
 
   // One-shot "Order placed!" toast when navigated from checkout.
   useEffect(() => {
@@ -278,10 +285,15 @@ function OrderHero({
 /*                           Live tracking block                              */
 /* -------------------------------------------------------------------------- */
 /**
- * Thin wrapper that subscribes to `/orders/:id/track` and forwards the
- * latest snapshot into `TrackingMap`. We pull the restaurant coords from
- * the parent order payload (address-based approximation) because the
- * tracking endpoint is lightweight and does not repeat the restaurant lat.
+ * Live tracking block — Phase 4.
+ *
+ * Subscribes to `/ws/orders/{id}` via `useOrderTrackingSocket` which
+ * writes every inbound event into `['orders', 'track', id, false]`. We
+ * still read the same cache key via `useOrderTrackQuery` but treat the
+ * polling as a FALLBACK: it only runs when the WS has been in `closed`
+ * / `reconnecting` state for > 5s (e.g. backend unreachable). When the
+ * WS is healthy we pass `refetchInterval: false` so we don't double-hit
+ * the API.
  */
 function LiveTrackingBlock({
   orderId,
@@ -290,13 +302,24 @@ function LiveTrackingBlock({
   orderId: string;
   order: OrderDetailOut;
 }): React.ReactElement {
-  const trackQ = useOrderTrackQuery(orderId, { refetchInterval: 10_000 });
-  const partner = trackQ.data?.partner_location ?? null;
-  const eta = trackQ.data?.eta_minutes ?? null;
+  const socket = useOrderTrackingSocket(orderId);
+  const pollingFallback = useWsClosedLongerThan(socket.liveState, 5_000);
 
-  // Fall back to the delivery address coords for the origin pin until the
-  // backend ships restaurant coords on the track payload (Phase 4). The
-  // address is geocoded at placement time so this is good enough for v1.
+  const trackQ = useOrderTrackQuery(orderId, {
+    refetchInterval: pollingFallback ? 10_000 : 0,
+  });
+  const partner = trackQ.data?.partner_location ?? null;
+
+  // Prefer server-computed ETA; derive from Haversine when backend hasn't
+  // sent one yet so the badge still updates the moment the courier moves.
+  const drop = order.address
+    ? { lat: order.address.lat, lng: order.address.lng }
+    : null;
+  const estimatedEta = useEtaEstimator([], partner, drop);
+  const eta = trackQ.data?.eta_minutes ?? estimatedEta;
+
+  // Restaurant pin: prefer track payload coords, else fall back to the
+  // delivery address (geocoded at placement time) — same v1 heuristic.
   const restaurant =
     trackQ.data?.restaurant_lat !== undefined && trackQ.data?.restaurant_lng !== undefined
       ? {
@@ -310,13 +333,27 @@ function LiveTrackingBlock({
 
   return (
     <section className="mt-6">
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-        Live tracking
-      </h2>
-      <TrackingMap
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          Live tracking
+        </h2>
+        <div className="flex items-center gap-2">
+          <EtaBadge minutes={eta ?? null} />
+          <LiveStatusBadge
+            liveState={socket.liveState}
+            lastTick={socket.lastTick}
+          />
+        </div>
+      </div>
+      <LiveTrackingMap
         restaurant={restaurant}
+        drop={
+          order.address
+            ? { lat: order.address.lat, lng: order.address.lng, label: order.address.label }
+            : null
+        }
         partnerLocation={partner}
-        etaMinutes={eta}
+        etaMinutes={eta ?? null}
       />
     </section>
   );

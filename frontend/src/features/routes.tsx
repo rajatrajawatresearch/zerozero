@@ -7,6 +7,13 @@ import { cartRoutes } from '@/features/cart';
 import { checkoutRoutes } from '@/features/checkout';
 import { orderRoutes } from '@/features/orders';
 import { searchRoutes } from '@/features/search';
+// Phase 4 additions — merged by Agent 10 (this file).
+// `partner-sim` is the only Phase 4 slice that exposes routes:
+//   - `tracking` augments existing Orders pages in place (hooks + components)
+//   - `theme-customizer` deepens the existing ThemeCustomizerSheet, no new route
+//   - `reviews` mounts inside RestaurantDetailPage, no new route
+//   - `notifications` lives in the header bell + right-side sheet, no new route
+import { partnerSimRoutes } from '@/features/partner-sim';
 
 /**
  * Root route table. Every path is nested under `<AppShell />` so the
@@ -15,8 +22,10 @@ import { searchRoutes } from '@/features/search';
  *
  * Feature slices own their own `routes` arrays (code-split via v7 `lazy`);
  * this file is the single point where we merge them. Phase 3 ships the
- * Cart, Checkout, Orders, and Search slices — the placeholder "coming
- * soon" entries have been retired.
+ * Cart, Checkout, Orders, and Search slices; Phase 4 layers the partner
+ * simulator (`/dev/partner`) and wires reviews + notifications into
+ * existing surfaces (restaurant detail + header) — so only one new route
+ * lands in the merge.
  *
  * Merge order matters only for `*` (the NotFound catch-all) which stays
  * last; everything else is path-addressed so the order is cosmetic.
@@ -37,6 +46,7 @@ export const routes: RouteObject[] = [
       ...checkoutRoutes,
       ...orderRoutes,
       ...searchRoutes,
+      ...partnerSimRoutes,
 
       /* ------------------------- Phase 2 hold-overs --------------------- */
       {
