@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { useShallow } from 'zustand/react/shallow';
 import { STORAGE_KEYS } from '@/lib/constants';
 import { env } from '@/lib/env';
 import type { Address, LocationPoint } from '@/types';
@@ -57,7 +58,15 @@ export const useLocationStore = create<LocationState>()(
 );
 
 /* ------------------------------ Selectors -------------------------------- */
-/** Single source of truth for "what lat/lng should we query against?". */
+/**
+ * Single source of truth for "what lat/lng should we query against?".
+ *
+ * ⚠️  This selector returns a FRESH object literal on every call. If you
+ * use it directly with `useLocationStore(selectActiveLatLng)` you will get
+ * an infinite-render loop because Zustand compares by reference.
+ * Always go through the `useActiveLatLng()` hook below (which applies
+ * `useShallow` for you), or call `useLocationStore(useShallow(selectActiveLatLng))`.
+ */
 export const selectActiveLatLng = (
   s: LocationState,
 ): { lat: number; lng: number } => {
@@ -66,6 +75,10 @@ export const selectActiveLatLng = (
   }
   return { lat: s.point.lat, lng: s.point.lng };
 };
+
+/** Stable-reference hook: the safe default way to read active coords. */
+export const useActiveLatLng = (): { lat: number; lng: number } =>
+  useLocationStore(useShallow(selectActiveLatLng));
 
 export const selectActiveLabel = (s: LocationState): string =>
   s.selectedAddress?.label ?? s.point.label;

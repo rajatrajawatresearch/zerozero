@@ -5,7 +5,7 @@ import { Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RestaurantCard } from '@/features/restaurants/components/RestaurantCard';
-import { selectActiveLatLng, useLocationStore } from '@/store/location';
+import { useActiveLatLng } from '@/store/location';
 import { cn } from '@/lib/utils';
 
 import { useGlobalSearchQuery } from '../api';
@@ -61,7 +61,7 @@ export default function SearchPage(): ReactElement {
   const tab = parseTab(searchParams.get('type'));
 
   const debounced = useDebouncedValue(rawQuery.trim(), 300);
-  const geo = useLocationStore(selectActiveLatLng);
+  const geo = useActiveLatLng();
 
   const updateParam = useCallback(
     (key: string, value: string | null) => {

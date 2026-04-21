@@ -11,7 +11,7 @@ import {
   CommandList,
   CommandSeparator,
 } from '@/components/ui/command';
-import { selectActiveLatLng, useLocationStore } from '@/store/location';
+import { useActiveLatLng } from '@/store/location';
 
 import { useGlobalSearchQuery } from '../api';
 import { useDebouncedValue, useGlobalSearchShortcut } from '../hooks';
@@ -37,17 +37,18 @@ interface GlobalSearchPaletteProps {
   onOpenChange?: (open: boolean) => void;
 }
 
-export function GlobalSearchPalette(
-  props: GlobalSearchPaletteProps = {},
-): ReactElement {
+export function GlobalSearchPalette({
+  open: controlledOpen,
+  onOpenChange,
+}: GlobalSearchPaletteProps = {}): ReactElement {
   const [internalOpen, setInternalOpen] = useState(false);
-  const open = props.open ?? internalOpen;
+  const open = controlledOpen ?? internalOpen;
   const setOpen = useCallback(
     (next: boolean) => {
-      if (props.onOpenChange) props.onOpenChange(next);
+      if (onOpenChange) onOpenChange(next);
       else setInternalOpen(next);
     },
-    [props],
+    [onOpenChange],
   );
 
   const [value, setValue] = useState('');
@@ -65,7 +66,7 @@ export function GlobalSearchPalette(
     }, [setOpen]),
   );
 
-  const geo = useLocationStore(selectActiveLatLng);
+  const geo = useActiveLatLng();
 
   const { data, isFetching } = useGlobalSearchQuery(debounced, geo, {
     enabled: debounced.length >= 2,

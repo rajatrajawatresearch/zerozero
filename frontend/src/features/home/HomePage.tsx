@@ -4,7 +4,7 @@ import { HeroSection } from './HeroSection';
 import { PromoBanner } from './PromoBanner';
 import {
   selectActiveLabel,
-  selectActiveLatLng,
+  useActiveLatLng,
   useLocationStore,
 } from '@/store/location';
 
@@ -20,7 +20,7 @@ import {
  * re-renders the grid + heading in one go without re-rendering the hero.
  */
 export default function HomePage(): ReactElement {
-  const { lat, lng } = useLocationStore(selectActiveLatLng);
+  const { lat, lng } = useActiveLatLng();
   const label = useLocationStore(selectActiveLabel);
   const gridParams = useMemo(() => ({ lat, lng }), [lat, lng]);
 

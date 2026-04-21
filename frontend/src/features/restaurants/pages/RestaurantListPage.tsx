@@ -2,7 +2,7 @@ import { MapPin, Search } from 'lucide-react';
 import { useDeferredValue, useMemo } from 'react';
 
 import { Input } from '@/components/ui/input';
-import { selectActiveLabel, selectActiveLatLng, useLocationStore } from '@/store/location';
+import { selectActiveLabel, useActiveLatLng, useLocationStore } from '@/store/location';
 
 import { FilterSidebar } from '../components/FilterSidebar';
 import { RestaurantGrid } from '../components/RestaurantGrid';
@@ -21,7 +21,7 @@ import type { RestaurantListParams } from '../types';
  *     This keeps this page free of a hard dependency on the picker module.
  */
 export default function RestaurantListPage(): React.ReactElement {
-  const activeLatLng = useLocationStore(selectActiveLatLng);
+  const activeLatLng = useActiveLatLng();
   const activeLabel = useLocationStore(selectActiveLabel);
   const { filters, set } = useFilters();
 
