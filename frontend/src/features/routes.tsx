@@ -3,6 +3,10 @@ import AppShell from '@/components/layout/AppShell';
 import { authRoutes } from '@/features/auth';
 import { restaurantRoutes } from '@/features/restaurants';
 import { locationRoutes } from '@/features/location/routes';
+import { cartRoutes } from '@/features/cart';
+import { checkoutRoutes } from '@/features/checkout';
+import { orderRoutes } from '@/features/orders';
+import { searchRoutes } from '@/features/search';
 
 /**
  * Root route table. Every path is nested under `<AppShell />` so the
@@ -10,9 +14,12 @@ import { locationRoutes } from '@/features/location/routes';
  * slot into the `<main>` element via `<Outlet />`.
  *
  * Feature slices own their own `routes` arrays (code-split via v7 `lazy`);
- * this file is the single point where we merge them. Phase 3 stubs live
- * here as small inline placeholders so the menu targets don't 404 before
- * their real pages land.
+ * this file is the single point where we merge them. Phase 3 ships the
+ * Cart, Checkout, Orders, and Search slices — the placeholder "coming
+ * soon" entries have been retired.
+ *
+ * Merge order matters only for `*` (the NotFound catch-all) which stays
+ * last; everything else is path-addressed so the order is cosmetic.
  */
 export const routes: RouteObject[] = [
   {
@@ -26,32 +33,18 @@ export const routes: RouteObject[] = [
       ...authRoutes,
       ...restaurantRoutes,
       ...locationRoutes,
+      ...cartRoutes,
+      ...checkoutRoutes,
+      ...orderRoutes,
+      ...searchRoutes,
 
-      /* ----------------------------- Phase 3 stubs ---------------------- */
-      {
-        path: '/cart',
-        element: (
-          <div className="mx-auto max-w-lg px-6 py-20 text-center text-muted-foreground">
-            <h1 className="mb-2 text-2xl font-bold text-foreground">Cart</h1>
-            <p>Your basket view is coming in Phase 3.</p>
-          </div>
-        ),
-      },
-      {
-        path: '/orders',
-        element: (
-          <div className="mx-auto max-w-lg px-6 py-20 text-center text-muted-foreground">
-            <h1 className="mb-2 text-2xl font-bold text-foreground">Orders</h1>
-            <p>Order history &amp; live tracking arrive in Phase 3.</p>
-          </div>
-        ),
-      },
+      /* ------------------------- Phase 2 hold-overs --------------------- */
       {
         path: '/profile',
         element: (
           <div className="mx-auto max-w-lg px-6 py-20 text-center text-muted-foreground">
             <h1 className="mb-2 text-2xl font-bold text-foreground">Profile</h1>
-            <p>Profile settings are coming in Phase 3.</p>
+            <p>Profile settings are coming in Phase 4.</p>
           </div>
         ),
       },
@@ -60,7 +53,7 @@ export const routes: RouteObject[] = [
         element: (
           <div className="mx-auto max-w-lg px-6 py-20 text-center text-muted-foreground">
             <h1 className="mb-2 text-2xl font-bold text-foreground">Settings</h1>
-            <p>Preferences land in Phase 3.</p>
+            <p>Preferences land in Phase 4.</p>
           </div>
         ),
       },

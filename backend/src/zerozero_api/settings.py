@@ -50,6 +50,9 @@ class Settings(BaseSettings):
     # Observability
     SENTRY_DSN: str | None = Field(default=None)
 
+    # Payments
+    PAYMENT_WEBHOOK_SECRET: str = Field(default="mock-secret")
+
     # Geocoding
     NOMINATIM_BASE_URL: str = Field(default="https://nominatim.openstreetmap.org")
     NOMINATIM_USER_AGENT: str = Field(default="zerozero-dev")

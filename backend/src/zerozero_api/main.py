@@ -154,6 +154,17 @@ def create_app() -> FastAPI:
     app.include_router(admin_restaurants_router, prefix=settings.API_V1_PREFIX)
     app.include_router(admin_menu_items_router, prefix=settings.API_V1_PREFIX)
 
+    # ---- PHASE 3 routers (each agent appends their own) ---------------------
+    from zerozero_api.routers.payments import router as payments_router
+    app.include_router(payments_router, prefix=settings.API_V1_PREFIX)
+    from zerozero_api.routers.cart import router as cart_router
+    app.include_router(cart_router, prefix=settings.API_V1_PREFIX)
+    from zerozero_api.routers.promos import router as promos_router
+    app.include_router(promos_router, prefix=settings.API_V1_PREFIX)
+    from zerozero_api.routers.search import router as search_router
+    app.include_router(search_router, prefix=settings.API_V1_PREFIX)
+    from zerozero_api.routers.orders import router as orders_router; app.include_router(orders_router, prefix=settings.API_V1_PREFIX)
+
     # ---- Static files (local storage driver only) ---------------------------
     # When STORAGE_DRIVER=local, we serve uploaded images from disk via
     # StaticFiles so the LocalDisk-produced public URLs actually resolve.

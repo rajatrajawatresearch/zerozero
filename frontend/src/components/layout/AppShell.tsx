@@ -3,6 +3,7 @@ import { Outlet } from 'react-router';
 import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
 import { MobileNav } from '@/components/layout/MobileNav';
+import { GlobalSearchPalette } from '@/features/search';
 
 /**
  * Root shell rendered for every route. Provides the skip-to-main affordance,
@@ -33,6 +34,7 @@ export function AppShell(): ReactElement {
       </main>
       <Footer />
       <MobileNav />
+      <GlobalSearchPalette />
     </div>
   );
 }

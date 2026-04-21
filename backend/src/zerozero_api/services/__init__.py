@@ -9,6 +9,11 @@ framework-agnostic and easy to unit-test.
 
 from __future__ import annotations
 
-from zerozero_api.services import address_service, auth_service, user_service
+from zerozero_api.services import (
+    address_service,
+    auth_service,
+    cart_service,
+    user_service,
+)
 
-__all__ = ["address_service", "auth_service", "user_service"]
+__all__ = ["address_service", "auth_service", "cart_service", "user_service"]
